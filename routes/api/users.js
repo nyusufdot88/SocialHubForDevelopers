@@ -4,7 +4,7 @@ import gravatar from 'gravatar';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import config from 'config';
-import User from '../../models/user.js';
+import User from '../../models/User.js';
 
 const userRouter = express.Router();
 
@@ -67,6 +67,8 @@ userRouter.post(
       // Save user to DB
       await user.save();
 
+      // Return jsonwebtoken
+
       const payload = {
         user: {
           id: user.id
@@ -79,7 +81,7 @@ userRouter.post(
         { expiresIn: 360000 },
         (err, token) => {
           if (err) throw err;
-          console.log('Generated Token:', token);
+          // console.log('Generated Token:', token);
           res.json({ token });
         }
       );
