@@ -16,6 +16,7 @@ profileRouter.get('/me', auth, async (req, res) => {
       'user',
       ['name', 'avatar']
     );
+
     if (!profile) {
       return res.status(400).json({ msg: 'There is no profile for this user' });
     }
@@ -29,6 +30,7 @@ profileRouter.get('/me', auth, async (req, res) => {
 // @rout Post api/profile/
 // @desc create and uppdate user profile
 // @access   private
+
 profileRouter.post(
   '/',
   [
@@ -58,7 +60,82 @@ profileRouter.post(
       instagram,
       linkedin
     } = req.body;
+
+    // build profile object
+    const profilefields = {};
+    profilefields.user = req.user.id;
+    if (company) profilefields.company = company;
+    if (website) profilefields.website = website;
+    if (location) profilefields.location = location;
+    if (bio) profilefields.bio = bio;
+    if (status) profilefields.status = status;
+    if (githubusername) profilefields.githubusername = githubusername;
+    if (skills)
+      profilefields.skills = skills.split(',').map((skill) => skill.trim());
+
+    //initialtion - build Social object
+    profilefields.social = {};
+    if (youtube) profilefields.social.youtube = youtube;
+    if (twitter) profilefields.social.twitter = twitter;
+    if (facebook) profilefields.social.facebook = facebook;
+    if (linkedin) profilefields.social.linkedin = linkedin;
+    if (instagram) profilefields.social.instagram = instagram;
+
+    try {
+      let profile = await Profile.findOne({ user: req.user.id });
+      if (profile) {
+        //update
+        profile = await Profile.findOneAndUpdate(
+          { user: req.user.id },
+          { $set: profilefields },
+          { new: true }
+        );
+        return res.json(profile);
+      }
+      // create
+      profile = new Profile(profilefields);
+      await profile.save();
+      return res.json(profile);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
   }
 );
+
+// @rout Get api/profile/
+// @desc Get all Profiles
+// @access   Public
+
+profileRouter.get('/', async (req, res) => {
+  try {
+    const profiles = await Profile.find().populate('user', ['name', 'avatar']);
+    res.json(profiles);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @rout Get api/profile/user/:user_id
+// @desc Get all Profile by user ID
+// @access   Public
+
+profileRouter.get('/user/:user_id', async (req, res) => {
+  try {
+    const profile = await Profile.findOne({
+      user: req.params.user_id
+    }).populate('user', ['name', 'avatar']);
+
+    if (!profile) return res.status(404).json({ msg: 'Profile not found' });
+    res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind == 'ObjectId') {
+      return res.status(404).json({ msg: 'Profile not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
 
 export default profileRouter;
