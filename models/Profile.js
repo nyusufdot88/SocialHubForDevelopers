@@ -31,7 +31,7 @@ const profileSchema = new mongoose.Schema({
   },
   experience: [
     {
-      title: {
+      tittle: {
         type: String,
         required: true
       },
