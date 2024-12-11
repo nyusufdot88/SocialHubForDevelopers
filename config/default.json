@@ -1,4 +1,6 @@
 {
   "mongoURI": "mongodb+srv://enwhy24:One2KAdB2024@learndb.adoy8.mongodb.net/?retryWrites=true&w=majority&appName=LearnDB",
-  "jwtSecret": "jwtsirta"
+  "jwtSecret": "jwtsirta",
+  "githubClientId": "Ov23liNuspuulaNIBlj9",
+  "githubSecret": "f679567827df7c2dcf1a25fff6422e2c2c66be59"
 }

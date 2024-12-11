@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const profileSchema = new mongoose.Schema({
+  //a reference to user Model
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
